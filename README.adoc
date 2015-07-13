@@ -1,0 +1,29 @@
+hadoop-install
+==============
+
+Installing Hadoop using Vagrant
+-------------------------------
+
+=== Install VirtualBox 
+
+link:https://www.virtualbox.org/[VirtualBox] is free open source virtualization software that allows you to easily create virtual machines. We will be using it to create a VM for our Hadoop installation. Download the package for your operating system from link:https://www.virtualbox.org/wiki/Downloads[https://www.virtualbox.org/wiki/Downloads]. Follow the installation instruction that correspond to your operating system.
+
+=== Install Vagrant
+
+link:http://docs.vagrantup.com/v2/installation/[Installing Vagrant] has instructions for install Vagrant which allows you to easily create virtual machines.
+
+=== Install 'hostmanager' Vagrant 
+
+link:https://github.com/smdahlen/vagrant-hostmanager[Vagrant Host Manager] allows us to customize how to resolve  resolves IP address for our VMs. Install it using:
+
+----
+$ vagrant plugin install vagrant-hostmanager
+----
+
+=== Start the Hadoop VM
+
+Use the following command to start the VM:
+
+----
+$ vagrant up
+----
