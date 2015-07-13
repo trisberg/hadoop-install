@@ -1,0 +1,409 @@
+Installing Hadoop
+=================
+
+There are many ways to get started using Hadoop. A fully production ready system uses many servers and is time consuming to install and configure. There are ready to use single-node VMs that you can download from several companies providing their own Hadoop distributions. While they are convenient, they do use 4 to 8GB of memory on your system and are usually configured to only accept connections from apps running on the local VM.
+
+Linux users can install _Hadoop_ from packages provided by the major Hadoop vendors or from packages provided by the link:http://bigtop.apache.org/[Apache BigTop project]. On Mac OS X, you can use link:http://brew.sh/[Homebrew]. Windows users can install using prebuilt packages from link:http://hortonworks.com/hdp/downloads/[Hortonworks] or build their own binaries from the Apache Hadoop project's source following instructions on the link:http://wiki.apache.org/hadoop/Hadoop2OnWindows[Apache Wiki].
+
+You can also download the binary distribution from the Apache Hadoop project and run it on a UNIX-like system. The following instructions describe how to use the Apache Hadoop binaries and set up a local single-node cluster in a virtual machine (VM) using the link:http://www.centos.org/[CentOS distribution]. This VM can then be run on your development system.
+
+=== Install VirtualBox 
+
+link:https://www.virtualbox.org/[VirtualBox] is free open source virtualization software that allows you to easily create virtual machines. We will be using it to create a VM for our Hadoop installation. Download the package for your operating system from link:https://www.virtualbox.org/wiki/Downloads[https://www.virtualbox.org/wiki/Downloads]. Follow the installation instruction that correspond to your operating system.
+
+Once you have VirtualBox installed and up and running we can create our virtual machine.
+
+=== Create a CentOS VM
+
+You can download the Centos 6.5 64-bit ISO from one of the mirrors at link:http://mirror.centos.org/centos/6/isos/x86_64/[http://mirror.centos.org/centos/6/isos/x86_64/]. We are using the 64-bit version since the binary Apache Hadoop distribution recently switched to ship with 64-bit native libraries.
+
+Install a basic VM with 4GB of memory and 40GB of disk space if you have this available. You can try allocating only 2GB of memory if you are low on resources. Add two network adapters, one "Host-only Adapter" and one using "NAT". If you haven't already created a "Host-only Network", you should do that first, under the VirtualBox Preferences Network tab. 
+
+Choose a hostname during the install. I picked 'borneo' as the hostname for my server. Create a 'hadoop' user as part of the install. The 'hadoop' user will be the owner of all Hadoop software that we install later.
+
+=== Configure networking and SSH
+
+==== Set hostname
+
+First we need to set the hostname. Log in as `root` and modify `/etc/sysconfig/network`. Set `HOSTNAME=borneo` or whatever hostname you choose. 
+
+Now we need to find the IP address for the "Host-only adpater". Run `ifconfig` and look for an IP address that starts with '192.168' -
+
+[source]
+----
+# ifconfig
+eth0      Link encap:Ethernet  HWaddr 08:00:27:1A:B0:08  
+          inet addr:192.168.59.103  Bcast:192.168.59.255  Mask:255.255.255.0
+...
+----
+
+Next, modify `\etc\hosts` and add your IP address and hostname like:
+
+[source]
+----
+127.0.0.1         localhost.localdomain localhost
+192.168.59.103    borneo
+::1        localhost6.localdomain6 localhost6
+----
+
+Now run `hostname` with your new hostname as parameter:
+[source]
+----
+# hostname borneo
+# hostname
+borneo
+----
+
+Last step is to restart networking or simply rebot the VM.
+
+[source]
+----
+# /etc/init.d/network restart
+Shutting down loopback interface:                          [  OK  ]
+Bringing up loopback interface:                            [  OK  ]
+----
+
+==== Disable firewall
+
+Run the following commands to turn off the firewall:
+
+[source]
+----
+# service iptables save
+# service iptables stop
+# chkconfig iptables off
+# service ip6tables save
+# service ip6tables stop
+# chkconfig ip6tables off
+----
+
+==== Configure SSH
+
+The next step is to make it possible to create a Secure Shell (SSH) connection to localhost without being prompted for a password. Hadoop is designed to run on multiple servers and uses SSH to connect and start services on remote servers.
+
+The CentOS default install should have SSH installed, if not install it logged in as `root`:
+
+[source]
+----
+# yum -y install openssh-server openssh-clients
+----
+
+Now we should enable and start the `sshd` service, again logged in as `root`:
+
+[source]
+----
+# chkconfig sshd on
+# service sshd start
+----
+
+==== Configure password-less SSH
+
+Next, we need to generate and store our SSH certificates in the `autorized_keys` on the local system. We can use `ssh-keygen` for this. Log in as the `hadoop` user and then run:
+
+[source,bash]
+----
+$ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa 
+$ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
+$ chmod 600 ~/.ssh/authorized_keys
+----
+
+We should now be able to create an SSH connection to `localhost` without being prompted for a password (if you get a prompt for adding the host to the known hosts file, just enter 'yes'):
+
+[source,bash]
+----
+$ ssh localhost
+Last login: Wed Sep  3 10:00:52 2014 from borneo
+$ exit
+logout
+Connection to localhost closed.
+$ ssh borneo
+Last login: Wed Sep  3 10:00:52 2014 from localhost.localdomain
+$ exit
+logout
+Connection to borneo closed.
+----
+
+=== Install Java
+
+To install and run Hadoop we will be using a recent version of Java 7. We could use a late Java 6 update, but the Hadoop ecosystem of projects seems to be slowly moving towards Java 7 as the preferred platform.
+
+For CentOS/Red Hat Linux we install OpenJDK by running this command as `root`:
+
+[source]
+----
+# yum -y install java-1.7.0-openjdk-devel
+----
+
+=== Download Hadoop
+
+We need to download the binary distribution. The version we will be using is Apache Hadoop 2.6.0. The link for downloading is available at http://www.us.apache.org/dist/hadoop/common/hadoop-2.6.0/[http://www.us.apache.org/dist/hadoop/common/hadoop-2.6.0/]. Log in as the `hadoop` user and download the `hadoop-2.6.0.tar.gz` archive and unpack it locally.
+
+You can unpack the distribution with:
+
+[source,bash]
+----
+$ tar xzf ~/Downloads/hadoop-2.6.0.tar.gz
+----
+
+We now have the base for our installation and we'll work through the steps to get the Hadoop system up and running.
+
+=== Hadoop configuration files 
+
+The following configuration files are meant for a for single-node cluster running in pseudo-distributed mode. All configuration files are located in the `etc\hadoop` directory under the `~/hadoop-2.6.0` directory, and we need to modify the following ones:
+
+.core-site.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+ 
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://borneo:8020</value>
+    <final>true</final>
+  </property>
+ 
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>${user.home}/hadoop_data</value>
+    <description>A base for other temporary directories.</description>
+  </property>
+ 
+</configuration>
+----
+
+.hdfs-site.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+ 
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.support.append</name>
+        <value>true</value>
+    </property>
+
+</configuration>
+----
+
+.mapred-site.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+ 
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+</configuration>
+----
+
+.yarn-site.xml
+[source,xml]
+----
+<?xml version="1.0"?>
+<configuration>
+ 
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+ 
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+    
+    <!-- To increase number of apps that can run in YARN -->
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>4</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>8192</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>512</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.pmem-check-enabled</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+    </property>
+ 
+</configuration>
+----
+
+We also need to add your JAVA_HOME to the file `etc/hadoop/hadoop-env.sh`. Look for the following content in the beginning of the file:
+
+[source,bash]
+----
+# The java implementation to use.
+export JAVA_HOME=${JAVA_HOME}
+----
+
+Replace that `${JAVA_HOME}` with your actual JAVA_HOME directory like: `/usr/lib/jvm/java-1.7.0-openjdk.x86_64`.
+
+Now we are ready to setup our environment, there are a handful of environment variables to set.
+
+[source,bash]
+----
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
+export HADOOP_PREFIX=~/hadoop-2.6.0
+export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
+export YARN_CONF_DIR=$HADOOP_CONF_DIR
+export PATH=$PATH:$HADOOP_PREFIX/bin
+----
+
+You can put these in a file named `hadoop-env` and then just `source` that file like:
+
+[source,bash]
+----
+$ source hadoop-env
+----
+
+=== Format the HDFS Namenode
+
+[source,bash]
+----
+$ hdfs namenode -format
+----
+
+=== Create initial directories and set permissions
+
+First start HDFS using:
+
+[source,bash]
+----
+$ ./hadoop-2.6.0/sbin/start-dfs.sh
+----
+
+Then run the following commands to set up common directories and permissions:
+
+[source,bash]
+----
+$ hadoop fs -mkdir /tmp
+$ hadoop fs -chmod 1777 /tmp
+$ hadoop fs -mkdir /user
+$ hadoop fs -chmod 1777 /user
+$ hadoop fs -mkdir -p /tmp/hadoop-yarn/staging/history
+$ hadoop fs -chmod -R 777 /tmp/hadoop-yarn
+$ hadoop fs -mkdir -p /user/hive/warehouse
+$ hadoop fs -chmod 777 /user/hive/warehouse
+----
+
+Now, we can create some directories we need for the demo:
+
+[source,bash]
+----
+$ hadoop fs -mkdir /xd
+$ hadoop fs -chmod 777 /xd
+$ hadoop fs -mkdir /tweets
+$ hadoop fs -chmod 777 /tweets
+$ hadoop fs -mkdir /apps
+$ hadoop fs -chmod 777 /apps
+----
+
+You can now shut down HDFS using:
+
+[source,bash]
+----
+$ ./hadoop-2.6.0/sbin/stop-dfs.sh
+----
+
+
+
+=== Install Hive
+
+We need to download the binary distribution. The latest version available when writing this is Apache Hive 0.13.1. The link for downloading is available at link:http://www.us.apache.org/dist/hive/hive-0.13.1/[http://www.us.apache.org/dist/hive/hive-0.13.1/]. Logged in as the `hadoop` user download the `apache-hive-0.13.1-bin.tar.gz` archive and unpack it locally.  
+
+You can unpack the distribution with:
+
+[source,bash]
+----
+$ tar xzf ~/Downloads/apache-hive-0.13.1-bin.tar.gz
+----
+
+Set the Hive environment:
+
+[source,bash]
+----
+$ export HIVE_HOME=~/apache-hive-0.13.1-bin
+$ export PATH=$PATH:$HIVE_HOME/bin
+----
+
+You can add these to the `hadoop-env` file.
+
+=== Start Hadoop and Hive server2
+
+To start Hadoop HDFS and YARN run the following commands:
+
+[source,bash]
+----
+$ ./hadoop-2.6.0/sbin/start-dfs.sh
+$ ./hadoop-2.6.0/sbin/start-yarn.sh
+$ ./hadoop-2.6.0/sbin/mr-jobhistory-daemon.sh start historyserver
+----
+
+To stop Hadoop HDFS and YARN run the following commands:
+
+[source,bash]
+----
+$ ./hadoop-2.6.0/sbin/mr-jobhistory-daemon.sh stop historyserver
+$ ./hadoop-2.6.0/sbin/stop-yarn.sh
+$ ./hadoop-2.6.0/sbin/stop-dfs.sh
+----
+
+To start Hive run:
+
+[source,bash]
+----
+$ hive --service hiveserver2
+----
+
+To run Beeline Hive client run:
+
+[source,bash]
+----
+$ beeline
+!connect jdbc:hive2://borneo:10000 hadoop hive org.apache.hive.jdbc.HiveDriver
+----
+
+=== Configure workstation network and environment
+
+Add the IP address and host for the VM to your local `/etc/hosts` file:
+
+[source]
+----
+127.0.0.1   localhost barbados barbados.local
+255.255.255.255 broadcasthost
+::1             localhost 
+fe80::1%lo0 localhost
+
+192.168.59.103  borneo
+----
+
+If you want to use this VM with Spring XD you can set the following environment variables:
+
+[source]
+----
+export spring_hadoop_fsUri=hdfs://borneo:8020
+export spring_hadoop_resourceManagerHost=borneo
+export spring_hadoop_jobHistoryAddress=borneo:10020
+----
+
