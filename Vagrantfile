@@ -1,14 +1,17 @@
+VM_MEMORY = "2048"
+MANAGE_HOST = true
+HOST_NAME = "borneo"
+
 Vagrant.configure(2) do |config|
 
   config.vm.box = "chef/centos-6.5"
-  config.vm.define "borneo" do |borneo| end
 
   # Set and manage hostname
   config.vm.network "private_network", type: "dhcp"
-  config.vm.hostname = 'borneo'
+  config.vm.hostname = HOST_NAME
   config.hostmanager.enabled = true
   # config.vm.provision :hostmanager
-  config.hostmanager.manage_host = true
+  config.hostmanager.manage_host = MANAGE_HOST
   config.hostmanager.ignore_private_ip = false
   config.hostmanager.include_offline = true
   config.hostmanager.ip_resolver = proc do |machine|
@@ -24,8 +27,8 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "2048"
-    vb.name = "Hadoop-borneo"
+    vb.memory = VM_MEMORY
+    vb.name = "Hadoop-" + HOST_NAME
   end
 
   # Hack fixing issue where `hostname` always ends up resolving to 127.0.0.1
@@ -42,5 +45,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
   # Start Hadoop during 'vagrant up'
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
+  # Set Hadoop directory permissions
+  config.vm.provision :shell, path: "directory_permissions.sh", privileged: false
 
 end

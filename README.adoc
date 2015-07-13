@@ -4,9 +4,13 @@ hadoop-install
 Installing Hadoop using Vagrant
 -------------------------------
 
+This repository contains a simple single-node configuration for Hadoop running with Vagrant. It is intended for use during application development and testing. You will need working installs of VirtualBox and Vagrant.
+
 === Install VirtualBox 
 
 link:https://www.virtualbox.org/[VirtualBox] is free open source virtualization software that allows you to easily create virtual machines. We will be using it to create a VM for our Hadoop installation. Download the package for your operating system from link:https://www.virtualbox.org/wiki/Downloads[https://www.virtualbox.org/wiki/Downloads]. Follow the installation instruction that correspond to your operating system.
+
+NOTE: The current version of VirtualBox is 5.0. Until Vagrant supports this version we recommend downloading the 4.3 version of VirtualBox.
 
 === Install Vagrant
 
@@ -20,10 +24,32 @@ link:https://github.com/smdahlen/vagrant-hostmanager[Vagrant Host Manager] allow
 $ vagrant plugin install vagrant-hostmanager
 ----
 
-=== Start the Hadoop VM
+=== Create and start the Hadoop VM
 
-Use the following command to start the VM:
+Run the Hadoop VM for the root directory of this repository. Use the following command to start the VM:
 
 ----
 $ vagrant up
 ----
+
+==== Customizing the Vagrant configuration
+
+You might be prompted for your password when the hostmanager plug-in modifies the `hosts` file on your system.
+
+If you would rather modify the `hosts` file manually change this assignment to `false` in the `Vagrant` file:
+
+----
+MANAGE_HOST = true
+---- 
+
+If you want to change the host name modify this line in the `Vagrant` file:
+
+----
+HOST_NAME = "borneo"
+----
+
+If you would like to allocate more memory to the VM then change this line in the `Vagrant` file:
+
+----
+VM_MEMORY = "2048"
+---- 
