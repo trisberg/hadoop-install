@@ -12,7 +12,7 @@ link:https://www.virtualbox.org/[VirtualBox] is free open source virtualization 
 
 link:http://docs.vagrantup.com/v2/installation/[Installing Vagrant] has instructions for install Vagrant which allows you to easily create virtual machines.
 
-=== Install 'hostmanager' for Vagrant 
+=== Install `hostmanager` for Vagrant 
 
 link:https://github.com/smdahlen/vagrant-hostmanager[Vagrant Host Manager] allows us to customize how to resolve  resolves IP address for our VMs. Install it using:
 
