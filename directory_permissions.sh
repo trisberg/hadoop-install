@@ -10,3 +10,6 @@ set PATH=$PATH:$HADOOP_PREFIX/bin
 ./hadoop-2.6.0/bin/hdfs dfs -chmod 777 /user 2> null
 ./hadoop-2.6.0/bin/hdfs dfs -mkdir -p /tmp/hadoop-yarn/staging/history 2> null
 ./hadoop-2.6.0/bin/hdfs dfs -chmod -R 777 /tmp/hadoop-yarn 2> null
+# also create an /xd directory for Spring XD testing
+./hadoop-2.6.0/bin/hdfs dfs -mkdir /xd 2> null
+./hadoop-2.6.0/bin/hdfs dfs -chmod 777 /xd 2> null
