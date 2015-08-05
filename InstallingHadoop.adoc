@@ -136,20 +136,20 @@ For CentOS/Red Hat Linux we install OpenJDK by running this command as `root`:
 
 === Download Hadoop
 
-We need to download the binary distribution. The version we will be using is Apache Hadoop 2.6.0. The link for downloading is available at http://www.us.apache.org/dist/hadoop/common/hadoop-2.6.0/[http://www.us.apache.org/dist/hadoop/common/hadoop-2.6.0/]. Log in as the `hadoop` user and download the `hadoop-2.6.0.tar.gz` archive and unpack it locally.
+We need to download the binary distribution. The version we will be using is Apache Hadoop 2.7.1. The link for downloading is available at http://www.us.apache.org/dist/hadoop/common/hadoop-2.7.1/[http://www.us.apache.org/dist/hadoop/common/hadoop-2.7.1/]. Log in as the `hadoop` user and download the `hadoop-2.7.1.tar.gz` archive and unpack it locally.
 
 You can unpack the distribution with:
 
 [source,bash]
 ----
-$ tar xzf ~/Downloads/hadoop-2.6.0.tar.gz
+$ tar xzf ~/Downloads/hadoop-2.7.1.tar.gz
 ----
 
 We now have the base for our installation and we'll work through the steps to get the Hadoop system up and running.
 
 === Hadoop configuration files 
 
-The following configuration files are meant for a for single-node cluster running in pseudo-distributed mode. All configuration files are located in the `etc\hadoop` directory under the `~/hadoop-2.6.0` directory, and we need to modify the following ones:
+The following configuration files are meant for a for single-node cluster running in pseudo-distributed mode. All configuration files are located in the `etc\hadoop` directory under the `~/hadoop-2.7.1` directory, and we need to modify the following ones:
 
 .core-site.xml
 [source,xml]
@@ -264,7 +264,7 @@ Now we are ready to setup our environment, there are a handful of environment va
 [source,bash]
 ----
 export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
-export HADOOP_PREFIX=~/hadoop-2.6.0
+export HADOOP_PREFIX=~/hadoop-2.7.1
 export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
 export YARN_CONF_DIR=$HADOOP_CONF_DIR
 export PATH=$PATH:$HADOOP_PREFIX/bin
@@ -290,7 +290,7 @@ First start HDFS using:
 
 [source,bash]
 ----
-$ ./hadoop-2.6.0/sbin/start-dfs.sh
+$ ./hadoop-2.7.1/sbin/start-dfs.sh
 ----
 
 Then run the following commands to set up common directories and permissions:
@@ -323,7 +323,7 @@ You can now shut down HDFS using:
 
 [source,bash]
 ----
-$ ./hadoop-2.6.0/sbin/stop-dfs.sh
+$ ./hadoop-2.7.1/sbin/stop-dfs.sh
 ----
 
 
@@ -355,18 +355,18 @@ To start Hadoop HDFS and YARN run the following commands:
 
 [source,bash]
 ----
-$ ./hadoop-2.6.0/sbin/start-dfs.sh
-$ ./hadoop-2.6.0/sbin/start-yarn.sh
-$ ./hadoop-2.6.0/sbin/mr-jobhistory-daemon.sh start historyserver
+$ ./hadoop-2.7.1/sbin/start-dfs.sh
+$ ./hadoop-2.7.1/sbin/start-yarn.sh
+$ ./hadoop-2.7.1/sbin/mr-jobhistory-daemon.sh start historyserver
 ----
 
 To stop Hadoop HDFS and YARN run the following commands:
 
 [source,bash]
 ----
-$ ./hadoop-2.6.0/sbin/mr-jobhistory-daemon.sh stop historyserver
-$ ./hadoop-2.6.0/sbin/stop-yarn.sh
-$ ./hadoop-2.6.0/sbin/stop-dfs.sh
+$ ./hadoop-2.7.1/sbin/mr-jobhistory-daemon.sh stop historyserver
+$ ./hadoop-2.7.1/sbin/stop-yarn.sh
+$ ./hadoop-2.7.1/sbin/stop-dfs.sh
 ----
 
 To start Hive run:
