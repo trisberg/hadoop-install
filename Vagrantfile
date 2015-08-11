@@ -1,4 +1,4 @@
-VM_MEMORY = "4096"
+VM_MEMORY = "8192"
 MANAGE_HOST = true
 HOST_NAME = "borneo"
 
@@ -44,9 +44,11 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
   config.vm.provision :shell, path: "install_hive.sh", privileged: false
-  # Start Hadoop and Hive during 'vagrant up'
+  config.vm.provision :shell, path: "install_sqoop2.sh", privileged: false
+  # Start Hadoop, Hive and Sqoop2 during 'vagrant up'
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
   config.vm.provision :shell, path: "start_hive.sh", run: "always", privileged: false
+  config.vm.provision :shell, path: "start_sqoop2.sh", run: "always", privileged: false
   # Set Hadoop directory permissions
   config.vm.provision :shell, path: "directory_permissions.sh", privileged: false
 
