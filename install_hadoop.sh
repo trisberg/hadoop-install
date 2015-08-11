@@ -1,9 +1,10 @@
 echo Downloading Hadoop ...
 wget -q http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz
 echo Installing Hadoop ...
-tar xzf hadoop-2.7.1.tar.gz
-cp -f /vagrant/etc/hadoop/*-site.xml hadoop-2.7.1/etc/hadoop/.
-sed -i "s/\${JAVA_HOME}/\/usr\/lib\/jvm\/java-1.7.0-openjdk.x86_64/g" hadoop-2.7.1/etc/hadoop/hadoop-env.sh
+mkdir hadoop
+tar xzf hadoop-2.7.1.tar.gz -C hadoop --strip-components=1
+cp -f /vagrant/etc/hadoop/*-site.xml hadoop/etc/hadoop/.
+sed -i "s/\${JAVA_HOME}/\/usr\/lib\/jvm\/java-1.7.0-openjdk.x86_64/g" hadoop/etc/hadoop/hadoop-env.sh
 set JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk.x86_64
-./hadoop-2.7.1/bin/hdfs namenode -format
+./hadoop/bin/hdfs namenode -format
 
