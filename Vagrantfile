@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
   # Install Java
   config.vm.provision "shell", inline: <<-SHELL
     echo Installing Java ...
-    yum -y -q install java-1.7.0-openjdk-devel
+    yum -y -q install java-1.8.0-openjdk-devel.x86_64
   SHELL
   # Set up and install Hadoop
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
