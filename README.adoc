@@ -24,9 +24,26 @@ link:https://github.com/smdahlen/vagrant-hostmanager[Vagrant Host Manager] allow
 $ vagrant plugin install vagrant-hostmanager
 ----
 
+=== Clone this repository and pick a branch to use
+
+Clone this repository and check out one of the branches depending on your needs.
+
+- SpringOne2GX-2015-Edition
+- Hadoop-2.7.1
+- Hadoop-2.7.1-JDK8
+- Hadoop-2.6.0
+
+For the `SpringOne2GX-2015-Edition` use the following commands:
+
+----
+git clone https://github.com/trisberg/hadoop-install.git
+cd hadoop-install
+git checkout SpringOne2GX-2015-Edition
+----
+
 === Create and start the Hadoop VM
 
-Run the Hadoop VM for the root directory of this repository. Use the following command to start the VM:
+Run the Hadoop VM from the root directory of this repository. Use the following command to start the VM:
 
 ----
 $ vagrant up
