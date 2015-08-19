@@ -13,3 +13,6 @@ set PATH=$PATH:$HADOOP_PREFIX/bin
 # also create an /xd directory for Spring XD testing
 ./hadoop/bin/hdfs dfs -mkdir /xd 2> null
 ./hadoop/bin/hdfs dfs -chmod 777 /xd 2> null
+# also create an /app directory
+./hadoop/bin/hdfs dfs -mkdir /app 2> null
+./hadoop/bin/hdfs dfs -chmod 777 /app 2> null
