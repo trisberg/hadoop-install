@@ -45,6 +45,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
   config.vm.provision :shell, path: "install_hive.sh", privileged: false
   config.vm.provision :shell, path: "install_hsqldb.sh", privileged: false
+  config.vm.provision :shell, path: "install_spark.sh", privileged: false
   # Start Hadoop and Hive during 'vagrant up'
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
   config.vm.provision :shell, path: "start_hive.sh", run: "always", privileged: false
