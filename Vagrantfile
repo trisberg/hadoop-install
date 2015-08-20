@@ -1,4 +1,4 @@
-VM_MEMORY = "2048"
+VM_MEMORY = "4096"
 MANAGE_HOST = true
 HOST_NAME = "borneo"
 
@@ -43,9 +43,18 @@ Vagrant.configure(2) do |config|
   # Set up and install Hadoop
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
+  # Set up and install Redis
+  config.vm.provision :shell, path: "install_redis.sh"
   # Start Hadoop during 'vagrant up'
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
   # Set Hadoop directory permissions
   config.vm.provision :shell, path: "directory_permissions.sh", privileged: false
+  # Start Redis during 'vagrant up'
+  config.vm.provision :shell, path: "start_redis.sh", run: "always"
+  # Install GNU Screen
+  config.vm.provision "shell", inline: <<-SHELL
+    echo Installing GNU Screen ...
+    yum -y install screen
+  SHELL
 
 end
