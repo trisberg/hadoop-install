@@ -40,14 +40,18 @@ Vagrant.configure(2) do |config|
     echo Installing Java ...
     yum -y -q install java-1.7.0-openjdk-devel
   SHELL
-  # Set up and install Hadoop
+  # Set up and install Hadoop and other services
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
   config.vm.provision :shell, path: "install_hive.sh", privileged: false
   config.vm.provision :shell, path: "install_hsqldb.sh", privileged: false
+  config.vm.provision :shell, path: "install_redis.sh"
   # Start Hadoop and Hive during 'vagrant up'
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
   config.vm.provision :shell, path: "start_hive.sh", run: "always", privileged: false
+  # Start Redis during 'vagrant up'
+  config.vm.provision :shell, path: "start_redis.sh", run: "always"
+  # Start HSQLDB during 'vagrant up'
   config.vm.provision :shell, path: "start_hsqldb.sh", run: "always", privileged: false
   # Set Hadoop directory permissions
   config.vm.provision :shell, path: "directory_permissions.sh", privileged: false
