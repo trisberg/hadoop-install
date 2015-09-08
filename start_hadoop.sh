@@ -4,6 +4,9 @@ set HADOOP_PREFIX=~/hadoop
 set HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
 set YARN_CONF_DIR=$HADOOP_CONF_DIR
 set PATH=$PATH:$HADOOP_PREFIX/bin
+# clean out old pid files
+rm /tmp/*-vagrant-*.pid
+# start hdfs, yarn and historyserver
 ./hadoop/sbin/start-dfs.sh
 ./hadoop/sbin/start-yarn.sh
 ./hadoop/sbin/mr-jobhistory-daemon.sh start historyserver
