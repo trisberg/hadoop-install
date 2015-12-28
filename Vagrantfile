@@ -4,7 +4,7 @@ HOST_NAME = "borneo"
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "chef/centos-6.5"
+  config.vm.box = "bento/centos-6.7"
 
   # Set and manage hostname
   config.vm.network "private_network", type: "dhcp"
@@ -39,6 +39,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     echo Installing Java ...
     yum -y -q install java-1.7.0-openjdk-devel
+    echo Updating nss ...
+    yum -y -q update nss
   SHELL
   # Set up and install Hadoop
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
