@@ -6,4 +6,4 @@ Installing Hadoop using Vagrant
 
 This repository contains a simple single-node configuration for Hadoop running with Vagrant. It is intended for use during application development and testing. You will need working installs of VirtualBox and Vagrant.
 
-Instructions can be found on the link:wiki[wiki].
+Instructions can be found on the link:wiki[https://github.com/trisberg/hadoop-install/wiki].
