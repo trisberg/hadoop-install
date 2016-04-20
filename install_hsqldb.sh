@@ -1,5 +1,5 @@
 echo Downloading HSQLDB ...
-wget -q http://hsqldb.org/download/hsqldb-2.3.3.zip
+wget -q https://sourceforge.net/projects/hsqldb/files/hsqldb/hsqldb_2_3/hsqldb-2.3.3.zip
 echo Installing HSQLDB ...
 sudo yum -y install unzip
 unzip -q hsqldb-2.3.3.zip
