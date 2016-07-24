@@ -1,10 +1,10 @@
-VM_MEMORY = "2048"
+VM_MEMORY = "4096"
 MANAGE_HOST = true
 HOST_NAME = "borneo"
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "chef/centos-6.5"
+  config.vm.box = "bento/centos-6.7"
 
   # Set and manage hostname
   config.vm.network "private_network", type: "dhcp"
@@ -40,7 +40,7 @@ Vagrant.configure(2) do |config|
     echo Installing Java ...
     yum -y -q install java-1.8.0-openjdk-devel.x86_64
   SHELL
-  # Set up and install Hadoop
+  # Set up and install Hadoop and other services
   config.vm.provision :shell, path: "passwordless_ssh.sh", privileged: false
   config.vm.provision :shell, path: "install_hadoop.sh", privileged: false
   # Start Hadoop during 'vagrant up'
