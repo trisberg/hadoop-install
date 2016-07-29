@@ -47,5 +47,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "start_hadoop.sh", run: "always", privileged: false
   # Set Hadoop directory permissions
   config.vm.provision :shell, path: "directory_permissions.sh", privileged: false
+  # Install Spark
+  config.vm.provision :shell, path: "install_spark.sh", privileged: false
 
 end
