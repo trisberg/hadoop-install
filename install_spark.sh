@@ -1,5 +1,5 @@
 echo Downloading Spark ...
-wget -q http://www-us.apache.org/dist/spark/spark-1.6.2/spark-1.6.2-bin-hadoop2.6.tgz
+wget -q https://archive.apache.org/dist/spark/spark-1.6.2/spark-1.6.2-bin-hadoop2.6.tgz
 echo Installing Spark ...
 mkdir spark
 tar xzf spark-1.6.2-bin-hadoop2.6.tgz -C spark --strip-components=1
