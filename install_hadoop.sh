@@ -1,5 +1,5 @@
 echo Downloading Hadoop ...
-wget -q http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz
+wget -q https://archive.apache.org/dist/hadoop/common/hadoop-2.7.1/hadoop-2.7.1-src.tar.gz
 echo Installing Hadoop ...
 mkdir hadoop
 tar xzf hadoop-2.7.1.tar.gz -C hadoop --strip-components=1
